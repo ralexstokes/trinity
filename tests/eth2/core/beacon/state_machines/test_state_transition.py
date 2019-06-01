@@ -52,6 +52,7 @@ def test_per_slot_transition(chaindb,
                              config,
                              state_slot,
                              fork_choice_scoring,
+                             empty_attestation_pool,
                              keymap):
     chaindb.persist_block(genesis_block, SerenityBeaconBlock, fork_choice_scoring)
     chaindb.persist_state(genesis_state)
@@ -64,6 +65,7 @@ def test_per_slot_transition(chaindb,
         config=config,
         state_machine=fixture_sm_class(
             chaindb,
+            empty_attestation_pool,
             genesis_block,
         ),
         block_class=SerenityBeaconBlock,
@@ -78,6 +80,7 @@ def test_per_slot_transition(chaindb,
     # Get state machine instance
     sm = fixture_sm_class(
         chaindb,
+        empty_attestation_pool,
         block,
     )
 

@@ -22,6 +22,7 @@ from eth2.beacon.fork_choice import (
 from eth2.beacon.helpers import (
     slot_to_epoch,
 )
+from eth2.beacon.operations.attestation_pool import AttestationPool
 from eth2.beacon.types.attestation_data import AttestationData
 from eth2.beacon.types.crosslinks import Crosslink
 from eth2.beacon.types.deposit_data import DepositData
@@ -809,6 +810,11 @@ def fixture_sm_class(config):
 @pytest.fixture
 def fork_choice_scoring():
     return higher_slot_scoring
+
+
+@pytest.fixture
+def empty_attestation_pool():
+    return AttestationPool()
 
 
 @pytest.fixture

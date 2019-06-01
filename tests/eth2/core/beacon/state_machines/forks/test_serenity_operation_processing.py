@@ -40,7 +40,8 @@ def test_process_max_attestations(genesis_state,
                                   config,
                                   keymap,
                                   fixture_sm_class,
-                                  chaindb):
+                                  chaindb,
+                                  empty_attestation_pool):
     attestation_slot = config.GENESIS_SLOT
     current_slot = attestation_slot + config.MIN_ATTESTATION_INCLUSION_DELAY
     state = genesis_state.copy(
@@ -52,6 +53,7 @@ def test_process_max_attestations(genesis_state,
         config=config,
         state_machine=fixture_sm_class(
             chaindb,
+            empty_attestation_pool,
             genesis_block,
         ),
         attestation_slot=attestation_slot,
@@ -255,6 +257,7 @@ def test_process_attestations(genesis_state,
                               keymap,
                               fixture_sm_class,
                               chaindb,
+                              empty_attestation_pool,
                               success):
 
     attestation_slot = 0
@@ -268,6 +271,7 @@ def test_process_attestations(genesis_state,
         config=config,
         state_machine=fixture_sm_class(
             chaindb,
+            empty_attestation_pool,
             genesis_block,
         ),
         attestation_slot=attestation_slot,
