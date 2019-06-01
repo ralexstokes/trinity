@@ -29,7 +29,8 @@ from eth2.beacon.typing import (
 )
 from eth2.beacon.chains.testnet import TestnetChain
 from eth2.beacon.fork_choice import higher_slot_scoring
-from eth2.beacon.operations.attestation_pool import AttestationPool
+# TODO(ralexstokes) merge together each pool
+from eth2.beacon.operations.attestation_pool import AttestationPool as TempPool
 from eth2.beacon.types.attestations import Attestation
 from eth2.beacon.types.blocks import (
     BaseBeaconBlock,
@@ -96,7 +97,7 @@ async def get_fake_chain() -> FakeChain:
     chain_db = await helpers.get_genesis_chain_db(genesis_config=genesis_config)
     return FakeChain(
         base_db=chain_db.db,
-        attestation_pool=AttestationPool(),
+        attestation_pool=TempPool(),
         genesis_config=genesis_config
     )
 
