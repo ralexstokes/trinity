@@ -94,7 +94,11 @@ class FakeChain(TestnetChain):
 async def get_fake_chain() -> FakeChain:
     genesis_config = Eth2GenesisConfig(XIAO_LONG_BAO_CONFIG)
     chain_db = await helpers.get_genesis_chain_db(genesis_config=genesis_config)
-    return FakeChain(base_db=chain_db.db, attestation_pool=AttestationPool(), genesis_config=genesis_config)
+    return FakeChain(
+        base_db=chain_db.db,
+        attestation_pool=AttestationPool(),
+        genesis_config=genesis_config
+    )
 
 
 def get_blocks(
