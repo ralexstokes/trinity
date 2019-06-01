@@ -16,7 +16,7 @@ from eth2.configs import (
 from eth2.beacon.constants import (
     FAR_FUTURE_EPOCH,
 )
-from eth2.beacon.fork_choice import (
+from eth2.beacon.fork_choice.higher_slot import (
     higher_slot_scoring,
 )
 from eth2.beacon.helpers import (
