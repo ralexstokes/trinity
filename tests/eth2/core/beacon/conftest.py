@@ -800,10 +800,11 @@ def config(
 # State machine
 #
 @pytest.fixture
-def fixture_sm_class(config):
+def fixture_sm_class(config, fork_choice_scoring):
     return SerenityStateMachine.configure(
         __name__='SerenityStateMachineForTesting',
         config=config,
+        get_fork_choice_scoring=lambda self: fork_choice_scoring
     )
 
 
