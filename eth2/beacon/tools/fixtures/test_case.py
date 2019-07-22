@@ -13,3 +13,7 @@ class BaseStateTestCase:
     pre: BeaconState
     post: BeaconState
     is_valid: bool = True
+
+
+class TestCase:
+    pass
