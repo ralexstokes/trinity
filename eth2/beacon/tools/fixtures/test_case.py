@@ -1,17 +1,10 @@
-from typing import (
-    Tuple,
-)
+from typing import Tuple
 
-from dataclasses import (
-    dataclass,
-    field,
-)
+from dataclasses import dataclass, field
 
 from eth2.beacon.types.blocks import BeaconBlock
 from eth2.beacon.types.states import BeaconState
-from eth2.beacon.typing import (
-    Slot,
-)
+from eth2.beacon.typing import Slot
 
 
 @dataclass

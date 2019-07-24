@@ -1,13 +1,7 @@
-from py_ecc.optimized_bls12_381 import (
-    curve_order,
-)
-from eth_typing import (
-    BLSSignature,
-)
+from py_ecc.optimized_bls12_381 import curve_order
+from eth_typing import BLSSignature
 
-from eth2.beacon.constants import (
-    EMPTY_SIGNATURE,
-)
+from eth2.beacon.constants import EMPTY_SIGNATURE
 
 
 def validate_private_key(privkey: int) -> None:
