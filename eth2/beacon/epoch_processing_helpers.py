@@ -71,7 +71,7 @@ def increase_balance(state: BeaconState, index: ValidatorIndex, delta: Gwei) -> 
         balances=update_tuple_item_with_fn(
             state.balances,
             index,
-            lambda balance, *_: Gwei(balance + delta)
+            lambda balance: Gwei(balance + delta),
         ),
     )
 
@@ -81,7 +81,7 @@ def decrease_balance(state: BeaconState, index: ValidatorIndex, delta: Gwei) -> 
         balances=update_tuple_item_with_fn(
             state.balances,
             index,
-            lambda balance, *_: Gwei(0) if delta > balance else Gwei(balance - delta)
+            lambda balance: Gwei(0) if delta > balance else Gwei(balance - delta),
         ),
     )
 

@@ -46,5 +46,5 @@ def update_tuple_item(tuple_data: Tuple[VType, ...],
     return update_tuple_item_with_fn(
         tuple_data,
         index,
-        lambda *_: new_value
+        lambda: new_value,
     )
