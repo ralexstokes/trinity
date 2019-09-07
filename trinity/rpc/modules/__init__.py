@@ -1,5 +1,4 @@
 from typing import (
-    Any,
     Iterable,
 )
 
@@ -13,14 +12,12 @@ from trinity.chains.base import AsyncChainAPI
 
 from .main import (  # noqa: F401
     BaseRPCModule,
-    BeaconChainRPCModule,
     ChainReplacementEvent,
     Eth1ChainRPCModule,
     ChainBasedRPCModule,
 )
 
 from .admin import Admin
-from .beacon import Beacon  # noqa: F401
 from .eth import Eth  # noqa: F401
 from .evm import EVM  # noqa: F401
 from .net import Net  # noqa: F401
@@ -35,9 +32,3 @@ def initialize_eth1_modules(chain: AsyncChainAPI,
     yield Net(event_bus)
     yield Web3()
     yield Admin(event_bus)
-
-
-@to_tuple
-def initialize_beacon_modules(chain: Any,
-                              event_bus: EndpointAPI) -> Iterable[BaseRPCModule]:
-    yield Beacon(chain, event_bus)

@@ -13,7 +13,6 @@ from eth.db.header import (
 from trinity.config import (
     Eth1AppConfig,
     Eth1DbMode,
-    BeaconAppConfig,
     TrinityConfig
 )
 from trinity.chains.base import AsyncChainAPI
@@ -28,7 +27,6 @@ from trinity.rpc.main import (
     RPCServer,
 )
 from trinity.rpc.modules import (
-    initialize_beacon_modules,
     initialize_eth1_modules,
 )
 from trinity.rpc.ipc import (
@@ -75,9 +73,7 @@ class JsonRpcServerPlugin(AsyncioIsolatedPlugin):
             raise Exception(f"Unsupported Database Mode: {eth1_app_config.database_mode}")
 
     def chain_for_config(self, trinity_config: TrinityConfig) -> AsyncChainAPI:
-        if trinity_config.has_app_config(BeaconAppConfig):
-            return None
-        elif trinity_config.has_app_config(Eth1AppConfig):
+        if trinity_config.has_app_config(Eth1AppConfig):
             eth1_app_config = trinity_config.get_app_config(Eth1AppConfig)
             return self.chain_for_eth1_config(trinity_config, eth1_app_config)
         else:
@@ -89,8 +85,6 @@ class JsonRpcServerPlugin(AsyncioIsolatedPlugin):
 
         if trinity_config.has_app_config(Eth1AppConfig):
             modules = initialize_eth1_modules(chain, self.event_bus)
-        elif trinity_config.has_app_config(BeaconAppConfig):
-            modules = initialize_beacon_modules(chain, self.event_bus)
         else:
             raise Exception("Unsupported Node Type")
 
