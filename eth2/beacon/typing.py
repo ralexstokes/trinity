@@ -3,8 +3,7 @@ from typing import Any, NamedTuple, NewType, Sequence, Tuple
 from eth_typing import Hash32
 from typing_extensions import Protocol
 
-Slot = NewType("Slot", int)  # uint64
-Epoch = NewType("Epoch", int)  # uint64
+from eth2.typing import Epoch, Gwei, Second, Slot
 
 
 class Bitfield(Tuple[bool, ...]):
@@ -22,10 +21,8 @@ CommitteeValidatorIndex = NewType(
     "CommitteeValidatorIndex", int
 )  # uint64, the i-th position in a committee tuple
 
-Gwei = NewType("Gwei", int)  # uint64
 
 Timestamp = NewType("Timestamp", int)
-Second = NewType("Second", int)
 
 Version = NewType("Version", bytes)
 

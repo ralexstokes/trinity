@@ -17,7 +17,6 @@ from eth2.beacon.state_machines.forks.skeleton_lake.config import (
 )
 from eth2.beacon.tools.builder.initializer import create_mock_genesis
 from eth2.beacon.tools.builder.validator import mk_keymap_of_size
-from eth2.beacon.tools.misc.ssz_vector import override_lengths
 from eth2.beacon.types.blocks import BaseSignedBeaconBlock
 from eth2.beacon.types.states import BeaconState
 from eth2.beacon.typing import Timestamp
@@ -48,7 +47,6 @@ class BeaconChainFactory(factory.Factory):
         lacking a proper signature so the ``perform_validation`` option to ``import_block``
         is disabled.
         """
-        override_lengths(cls.config)
         if "num_validators" in kwargs:
             num_validators = kwargs["num_validators"]
         else:

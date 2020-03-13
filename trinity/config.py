@@ -70,6 +70,7 @@ from eth2.beacon.typing import (
 )
 from eth2.configs import (
     Eth2GenesisConfig,
+    set_config_profile,
 )
 from eth2.validator_client.config import Config as ValidatorClientConfig
 from p2p.kademlia import (
@@ -771,7 +772,16 @@ class BeaconChainConfig:
         )
 
 
-class BeaconAppConfig(BaseAppConfig):
+class Eth2AppConfig(BaseAppConfig):
+
+    @classmethod
+    def from_parser_args(cls,
+                         args: argparse.Namespace,
+                         trinity_config: TrinityConfig) -> 'BaseAppConfig':
+        set_config_profile(args.config_profile)
+
+
+class BeaconAppConfig(Eth2AppConfig):
 
     @classmethod
     def from_parser_args(cls,
@@ -781,6 +791,9 @@ class BeaconAppConfig(BaseAppConfig):
         Initialize from the namespace object produced by
         an ``argparse.ArgumentParser`` and the :class:`~trinity.config.TrinityConfig`
         """
+        # NOTE: set eth2-wide configuration via this next call
+        super().from_parser_args(args, trinity_config)
+
         if args is not None:
             # This is quick and dirty way to get bootstrap_nodes
             trinity_config.bootstrap_nodes = tuple(
@@ -811,6 +824,6 @@ class BeaconAppConfig(BaseAppConfig):
         )
 
 
-class ValidatorClientAppConfig(BaseAppConfig):
+class ValidatorClientAppConfig(Eth2AppConfig):
     def get_client_config(self) -> ValidatorClientConfig:
         return ValidatorClientConfig()

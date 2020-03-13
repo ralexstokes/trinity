@@ -22,10 +22,6 @@ from ssz.tools import (
     to_formatted_dict,
 )
 
-from eth2.beacon.state_machines.forks.skeleton_lake import MINIMAL_SERENITY_CONFIG
-from eth2.beacon.tools.misc.ssz_vector import (
-    override_lengths,
-)
 from trinity.config import (
     TrinityConfig,
     BeaconAppConfig,
@@ -104,8 +100,6 @@ class InteropComponent(Application):
     @classmethod
     def munge_all_args(cls, args: Namespace, trinity_config: TrinityConfig) -> None:
         cls.logger.info("Configuring testnet")
-
-        override_lengths(MINIMAL_SERENITY_CONFIG)
 
         if args.wipedb:
             beacon_config = trinity_config.get_app_config(BeaconAppConfig)

@@ -11,8 +11,8 @@ from eth2.beacon.state_machines.forks.serenity.blocks import (
 from eth2.beacon.state_machines.forks.skeleton_lake import MINIMAL_SERENITY_CONFIG
 from eth2.beacon.tools.builder.initializer import create_mock_genesis
 from eth2.beacon.tools.builder.proposer import create_mock_block
+from eth2.configs import set_config_profile
 from eth2.beacon.tools.builder.validator import create_mock_signed_attestations_at_slot
-from eth2.beacon.tools.misc.ssz_vector import override_lengths
 
 
 @pytest.fixture
@@ -23,8 +23,8 @@ def fork_choice_scoring():
 @pytest.mark.parametrize(("validator_count"), ((40),))
 def test_demo(base_db, validator_count, keymap, pubkeys, fork_choice_scoring):
     bls.use_noop_backend()
-    config = MINIMAL_SERENITY_CONFIG
-    override_lengths(config)
+    config = set_config_profile("minimal")
+
     fixture_sm_class = SerenityStateMachine.configure(
         __name__="SerenityStateMachineForTesting", config=config
     )

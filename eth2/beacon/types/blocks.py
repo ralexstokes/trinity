@@ -10,6 +10,7 @@ from ssz.sedes import List, bytes32, bytes96, uint64
 
 from eth2.beacon.constants import EMPTY_SIGNATURE, GENESIS_PARENT_ROOT, ZERO_ROOT
 from eth2.beacon.typing import FromBlockParams, Root, Slot
+from eth2.configs import CURRENT_CONFIG
 
 from .attestations import Attestation
 from .attester_slashings import AttesterSlashing
@@ -33,11 +34,20 @@ class BeaconBlockBody(HashableContainer):
         ("randao_reveal", bytes96),
         ("eth1_data", Eth1Data),
         ("graffiti", bytes32),
-        ("proposer_slashings", List(ProposerSlashing, 16)),
-        ("attester_slashings", List(AttesterSlashing, 1)),
-        ("attestations", List(Attestation, 128)),
-        ("deposits", List(Deposit, 16)),
-        ("voluntary_exits", List(SignedVoluntaryExit, 16)),
+        (
+            "proposer_slashings",
+            List(ProposerSlashing, CURRENT_CONFIG.MAX_PROPOSER_SLASHINGS),
+        ),
+        (
+            "attester_slashings",
+            List(AttesterSlashing, CURRENT_CONFIG.MAX_ATTESTER_SLASHINGS),
+        ),
+        ("attestations", List(Attestation, CURRENT_CONFIG.MAX_ATTESTATIONS)),
+        ("deposits", List(Deposit, CURRENT_CONFIG.MAX_DEPOSITS)),
+        (
+            "voluntary_exits",
+            List(SignedVoluntaryExit, CURRENT_CONFIG.MAX_VOLUNTARY_EXITS),
+        ),
     ]
 
     @classmethod

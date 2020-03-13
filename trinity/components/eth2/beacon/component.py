@@ -61,6 +61,11 @@ class BeaconNodeComponent(AsyncioIsolatedComponent):
     @classmethod
     def configure_parser(cls, arg_parser: ArgumentParser, subparser: _SubParsersAction) -> None:
         arg_parser.add_argument(
+            "--config-profile",
+            help="one of: {mainnet, minimal}",
+            default="mainnet",
+        )
+        arg_parser.add_argument(
             "--beacon-nodekey",
             help="0xabcd",
         )

@@ -4,6 +4,7 @@ from ssz.hashable_container import HashableContainer
 from ssz.sedes import Bitlist, uint64
 
 from eth2.beacon.typing import Bitfield, ValidatorIndex
+from eth2.configs import CURRENT_CONFIG
 
 from .attestation_data import AttestationData, default_attestation_data
 from .defaults import default_bitfield, default_validator_index
@@ -14,7 +15,7 @@ TPendingAttestation = TypeVar("TPendingAttestation", bound="PendingAttestation")
 class PendingAttestation(HashableContainer):
 
     fields = [
-        ("aggregation_bits", Bitlist(1)),
+        ("aggregation_bits", Bitlist(CURRENT_CONFIG.MAX_VALIDATORS_PER_COMMITTEE)),
         ("data", AttestationData),
         ("inclusion_delay", uint64),
         ("proposer_index", uint64),

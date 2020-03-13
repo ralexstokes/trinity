@@ -7,7 +7,7 @@ from ssz.sedes import Vector, bytes32
 
 from eth2.beacon.constants import ZERO_ROOT
 from eth2.beacon.typing import Root
-from eth2.configs import Eth2Config
+from eth2.configs import CURRENT_CONFIG, Eth2Config
 
 from .defaults import default_tuple, default_tuple_of_size
 
@@ -16,7 +16,10 @@ THistoricalBatch = TypeVar("THistoricalBatch", bound="HistoricalBatch")
 
 class HistoricalBatch(HashableContainer):
 
-    fields = [("block_roots", Vector(bytes32, 1)), ("state_roots", Vector(bytes32, 1))]
+    fields = [
+        ("block_roots", Vector(bytes32, CURRENT_CONFIG.SLOTS_PER_HISTORICAL_ROOT)),
+        ("state_roots", Vector(bytes32, CURRENT_CONFIG.SLOTS_PER_HISTORICAL_ROOT)),
+    ]
 
     @classmethod
     def create(

@@ -13,9 +13,9 @@ from eth2.beacon.types.attestations import Attestation
 from eth2.beacon.types.blocks import BaseBeaconBlock  # noqa: F401
 from eth2.beacon.types.states import BeaconState  # noqa: F401
 from eth2.beacon.typing import Timestamp
+from eth2.configs import SERENITY_CONFIG
 
 from .blocks import SerenityBeaconBlock, SerenitySignedBeaconBlock
-from .configs import SERENITY_CONFIG
 from .state_transitions import SerenityStateTransition
 from .states import SerenityBeaconState
 

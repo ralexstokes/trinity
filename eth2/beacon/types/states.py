@@ -9,7 +9,7 @@ from ssz.sedes import Bitvector, List, Vector, bytes32, uint64
 from eth2.beacon.constants import JUSTIFICATION_BITS_LENGTH, ZERO_ROOT
 from eth2.beacon.helpers import compute_epoch_at_slot
 from eth2.beacon.typing import Bitfield, Epoch, Gwei, Root, Slot, Timestamp
-from eth2.configs import Eth2Config
+from eth2.configs import CURRENT_CONFIG, Eth2Config
 
 from .block_headers import BeaconBlockHeader, default_beacon_block_header
 from .checkpoints import Checkpoint, default_checkpoint
@@ -30,13 +30,20 @@ default_justification_bits = Bitfield((False,) * JUSTIFICATION_BITS_LENGTH)
 TBeaconState = TypeVar("TBeaconState", bound="BeaconState")
 
 
-# Use mainnet constants for defaults. We can't import the config object because of an import cycle.
 # TODO: When py-ssz is updated to support size configs, the config will be passed to the `create`
 # classmethod and we can create the defaults dynamically there.
-default_block_roots = default_tuple_of_size(2 ** 13, ZERO_ROOT)
-default_state_roots = default_tuple_of_size(2 ** 13, ZERO_HASH32)
-default_randao_mixes = default_tuple_of_size(2 ** 16, ZERO_HASH32)
-default_slashings = default_tuple_of_size(2 ** 13, Gwei(0))
+default_block_roots = default_tuple_of_size(
+    CURRENT_CONFIG.SLOTS_PER_HISTORICAL_ROOT, ZERO_ROOT
+)
+default_state_roots = default_tuple_of_size(
+    CURRENT_CONFIG.SLOTS_PER_HISTORICAL_ROOT, ZERO_ROOT
+)
+default_randao_mixes = default_tuple_of_size(
+    CURRENT_CONFIG.EPOCHS_PER_HISTORICAL_VECTOR, ZERO_HASH32
+)
+default_slashings = default_tuple_of_size(
+    CURRENT_CONFIG.EPOCHS_PER_SLASHINGS_VECTOR, Gwei(0)
+)
 
 
 class BeaconState(HashableContainer):
@@ -50,30 +57,45 @@ class BeaconState(HashableContainer):
         ("latest_block_header", BeaconBlockHeader),
         (
             "block_roots",
-            Vector(bytes32, 1),
+            Vector(bytes32, CURRENT_CONFIG.SLOTS_PER_HISTORICAL_ROOT),
         ),  # Needed to process attestations, older to newer  # noqa: E501
-        ("state_roots", Vector(bytes32, 1)),
+        ("state_roots", Vector(bytes32, CURRENT_CONFIG.SLOTS_PER_HISTORICAL_ROOT)),
         (
             "historical_roots",
-            List(bytes32, 1),
+            List(bytes32, CURRENT_CONFIG.HISTORICAL_ROOTS_LIMIT),
         ),  # allow for a log-sized Merkle proof from any block to any historical block root  # noqa: E501
         # Ethereum 1.0 chain
         ("eth1_data", Eth1Data),
-        ("eth1_data_votes", List(Eth1Data, 1)),
+        (
+            "eth1_data_votes",
+            List(Eth1Data, CURRENT_CONFIG.SLOTS_PER_ETH1_VOTING_PERIOD),
+        ),
         ("eth1_deposit_index", uint64),
         # Validator registry
-        ("validators", List(Validator, 1)),
-        ("balances", List(uint64, 1)),
+        ("validators", List(Validator, CURRENT_CONFIG.VALIDATOR_REGISTRY_LIMIT)),
+        ("balances", List(uint64, CURRENT_CONFIG.VALIDATOR_REGISTRY_LIMIT)),
         # Shuffling
-        ("randao_mixes", Vector(bytes32, 1)),
+        ("randao_mixes", Vector(bytes32, CURRENT_CONFIG.EPOCHS_PER_HISTORICAL_VECTOR)),
         # Slashings
         (
             "slashings",
-            Vector(uint64, 1),
+            Vector(uint64, CURRENT_CONFIG.EPOCHS_PER_SLASHINGS_VECTOR),
         ),  # Balances slashed at every withdrawal period  # noqa: E501
         # Attestations
-        ("previous_epoch_attestations", List(PendingAttestation, 1)),
-        ("current_epoch_attestations", List(PendingAttestation, 1)),
+        (
+            "previous_epoch_attestations",
+            List(
+                PendingAttestation,
+                CURRENT_CONFIG.MAX_ATTESTATIONS * CURRENT_CONFIG.SLOTS_PER_EPOCH,
+            ),
+        ),
+        (
+            "current_epoch_attestations",
+            List(
+                PendingAttestation,
+                CURRENT_CONFIG.MAX_ATTESTATIONS * CURRENT_CONFIG.SLOTS_PER_EPOCH,
+            ),
+        ),
         # Justification
         ("justification_bits", Bitvector(JUSTIFICATION_BITS_LENGTH)),
         ("previous_justified_checkpoint", Checkpoint),

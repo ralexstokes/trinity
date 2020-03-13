@@ -9,7 +9,7 @@ from eth_utils import encode_hex, event_abi_to_log_topic
 
 from web3 import Web3
 
-from eth2.beacon.constants import GWEI_PER_ETH
+from eth2.constants import GWEI_PER_ETH
 from eth2.beacon.tools.builder.validator import (
     make_deposit_tree_and_root,
     mk_key_pair_from_seed_index,

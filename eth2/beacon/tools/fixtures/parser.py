@@ -8,14 +8,12 @@ import eth_utils.toolz as toolz
 from eth2.beacon.tools.fixtures.config_types import ConfigType
 from eth2.beacon.tools.fixtures.fork_types import ForkType
 from eth2.beacon.tools.fixtures.format_type import FormatType, SSZType, YAMLType
-from eth2.beacon.tools.fixtures.loading import load_config_at_path
 from eth2.beacon.tools.fixtures.test_case import TestCase
 from eth2.beacon.tools.fixtures.test_handler import Input, Output, TestHandler
 from eth2.beacon.tools.fixtures.test_part import TestPart
 from eth2.beacon.tools.fixtures.test_suite import TestSuite
 from eth2.beacon.tools.fixtures.test_types import HandlerType, TestType
-from eth2.beacon.tools.misc.ssz_vector import override_lengths
-from eth2.configs import Eth2Config
+from eth2.configs import Eth2Config, set_config_profile
 
 # NOTE: if the tests_root_path keeps changing, can turn into
 # a ``pytest.config.Option`` and supply from the command line.
@@ -126,9 +124,7 @@ def _load_and_parse_test_suites(
     test_suite_descriptors = _discover_test_suite_from(test_handler_path)
 
     if config_type.has_config():
-        config_path = tests_path / Path(config_type.name) / Path(config_type.path)
-        config = load_config_at_path(config_path)
-        override_lengths(config)
+        config = set_config_profile(config_type.name)
     else:
         config = None
 

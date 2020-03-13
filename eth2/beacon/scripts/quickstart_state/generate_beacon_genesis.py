@@ -10,7 +10,6 @@ from eth2.beacon.tools.builder.initializer import (
 )
 from eth2.beacon.tools.fixtures.config_types import Minimal
 from eth2.beacon.tools.fixtures.loading import load_config_at_path, load_yaml_at
-from eth2.beacon.tools.misc.ssz_vector import override_lengths
 
 KEY_DIR = Path("eth2/beacon/scripts/quickstart_state")
 KEY_SET_FILE = Path("keygen_16_validators.yaml")

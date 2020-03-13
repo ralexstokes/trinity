@@ -1,0 +1,1 @@
+GWEI_PER_ETH = 10 ** 9

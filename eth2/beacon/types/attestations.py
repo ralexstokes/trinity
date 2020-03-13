@@ -7,6 +7,7 @@ from ssz.sedes import Bitlist, List, bytes96, uint64
 
 from eth2.beacon.constants import EMPTY_SIGNATURE
 from eth2.beacon.typing import Bitfield, ValidatorIndex
+from eth2.configs import CURRENT_CONFIG
 
 from .attestation_data import AttestationData, default_attestation_data
 from .defaults import default_bitfield, default_tuple
@@ -17,7 +18,7 @@ TAttestation = TypeVar("TAttestation", bound="Attestation")
 class Attestation(HashableContainer):
 
     fields = [
-        ("aggregation_bits", Bitlist(1)),
+        ("aggregation_bits", Bitlist(CURRENT_CONFIG.MAX_VALIDATORS_PER_COMMITTEE)),
         ("data", AttestationData),
         ("signature", bytes96),
     ]
@@ -51,7 +52,10 @@ class IndexedAttestation(HashableContainer):
 
     fields = [
         # Validator indices
-        ("attesting_indices", List(uint64, 1)),
+        (
+            "attesting_indices",
+            List(uint64, CURRENT_CONFIG.MAX_VALIDATORS_PER_COMMITTEE),
+        ),
         # Attestation data
         ("data", AttestationData),
         # Aggregate signature
