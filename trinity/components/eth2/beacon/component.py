@@ -51,16 +51,21 @@ class BeaconNodeComponent(AsyncioIsolatedComponent):
             "--metrics-port", type=int, help="Metrics server port", default=8008
         )
         arg_parser.add_argument(
-            "--debug-libp2p", action="store_true", help="Enable debug logging of libp2p"
+            "--enable-node-api",
+            action="store_true",
+            help="Enables the Beacon Node API Server",
         )
         arg_parser.add_argument(
-            "--enable-api", action="store_true", help="Enables the API Server"
+            "--node-api-port", type=int, help="API server port", default=8545
         )
         arg_parser.add_argument(
-            "--api-port", type=int, help="API server port", default=5005
+            "--enable-validator-api",
+            action="store_true",
+            help="Enables the Beacon Node API Server",
+            default=True,
         )
         arg_parser.add_argument(
-            "--bn-only", action="store_true", help="Run with BeaconNode only mode"
+            "--validator-api-port", type=int, help="API server port", default=5005
         )
 
     @property
@@ -73,11 +78,6 @@ class BeaconNodeComponent(AsyncioIsolatedComponent):
         key_pair = _load_secp256k1_key_pair_from(trinity_config)
         beacon_app_config = trinity_config.get_app_config(BeaconAppConfig)
         base_db = DBClient.connect(trinity_config.database_ipc_path)
-
-        if boot_info.args.debug_libp2p:
-            logging.getLogger("libp2p").setLevel(logging.DEBUG)
-        else:
-            logging.getLogger("libp2p").setLevel(logging.INFO)
 
         with base_db:
             chain_config = beacon_app_config.get_chain_config()
@@ -151,10 +151,14 @@ class BeaconNodeComponent(AsyncioIsolatedComponent):
             # NOTE: this API server provides an interface between the beacon node and
             # any connected validator clients.
             validator_api_handler = ValidatorAPIHandler(
-                chain, event_bus, chain_config.genesis_time
+                chain,
+                event_bus,
+                chain_config.genesis_time,
+                chain_config.genesis_config.SLOTS_PER_EPOCH,
             )
             validator_api_server = HTTPAppServer(
-                routes=validator_api_handler.make_routes(), port=30303
+                routes=validator_api_handler.make_routes(),
+                port=boot_info.args.validator_api_port,
             )
 
             services: Tuple[BaseService, ...] = (
@@ -163,6 +167,9 @@ class BeaconNodeComponent(AsyncioIsolatedComponent):
                 slot_ticker,
                 syncer,
                 validator_api_server,
+                chain_maintainer,
+                # TODO: remove?
+                validator_handler,
             )
 
             if boot_info.args.enable_metrics:
@@ -170,9 +177,6 @@ class BeaconNodeComponent(AsyncioIsolatedComponent):
 
             if boot_info.args.enable_api:
                 services += (api_server,)
-
-            if boot_info.args.bn_only:
-                services += (chain_maintainer, validator_handler)
 
             async with AsyncExitStack() as stack:
                 for service in services:

@@ -10,22 +10,27 @@ from ssz.tools.parse import from_formatted_dict
 from eth2.beacon.chains.base import BaseBeaconChain
 from eth2.beacon.types.attestations import Attestation, AttestationData
 from eth2.beacon.types.blocks import BeaconBlock, BeaconBlockBody
-from eth2.beacon.typing import Bitfield, CommitteeIndex, Slot
+from eth2.beacon.typing import Bitfield, CommitteeIndex, Slot, Epoch
 from eth2.validator_client.beacon_node import BeaconNodePath as APIEndpoint
 from trinity._utils.version import construct_trinity_client_identifier
 from trinity.http.apps.base_handler import BaseHandler, get, post
+
+def _epoch_to_slot(epoch, slots_per_epoch):
+    return epoch * slots_per_epoch
 
 
 class ValidatorAPIHandler(BaseHandler):
     logger = logging.getLogger("trinity.http.apps.validator_api.ValidatorAPIHandler")
 
     def __init__(
-        self, chain: BaseBeaconChain, event_bus: EndpointAPI, genesis_time: int
+        self, chain: BaseBeaconChain, event_bus: EndpointAPI, genesis_time: int, slots_per_epoch: Slot
     ):
         self._chain = chain
         self._event_bus = event_bus
         self._genesis_time = genesis_time
         self._client_identifier = construct_trinity_client_identifier()
+
+        self._slots_per_epoch = slots_per_epoch
 
     @get(APIEndpoint.node_version)
     async def _get_client_version(self, request: web.Request) -> web.Response:
@@ -49,15 +54,14 @@ class ValidatorAPIHandler(BaseHandler):
         public_keys = tuple(
             map(decode_hex, request.query["validator_pubkeys"].split(","))
         )
-        # epoch = Epoch(request.query["epoch"])
-        duties = tuple(
+        epoch = Epoch(int(request.query["epoch"]))
+        duties = (
             {
-                "validator_pubkey": encode_hex(public_key),
-                "attestation_slot": 2222,
+                "validator_pubkey": encode_hex(public_keys[0]),
+                "attestation_slot": _epoch_to_slot(epoch, self._slots_per_epoch) + 2,
                 "attestation_shard": 22,
                 "block_proposal_slot": 90,
-            }
-            for public_key in public_keys
+            },
         )
         return web.json_response(duties)
 

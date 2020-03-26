@@ -30,7 +30,7 @@ from eth2.validator_client.duty import (
 from eth2.validator_client.tick import Tick
 
 SYNCING_POLL_INTERVAL = 10  # seconds
-CONNECTION_RETRY_INTERVAL = 5  # seconds
+CONNECTION_RETRY_INTERVAL = 3  # seconds
 
 
 @unique
@@ -241,7 +241,7 @@ class BeaconNode(BeaconNodeAPI):
     ) -> None:
         self._is_connected = not self._is_connected
 
-    async def _connect(self, retry: bool = True) -> None:
+    async def _connect(self, retry_count: int = 10) -> None:
         """
         Verify the syncing status and genesis time of the provided
         beacon node, ensuring it is up-to-date and reachable.
@@ -252,14 +252,14 @@ class BeaconNode(BeaconNodeAPI):
             await self._validate_genesis_time()
             self._is_connected = True
         except OSError as e:
-            if retry:
+            if retry_count > 0:
                 self.logger.warn(
                     "could not connect to beacon node at %s; retrying connection in %d seconds",
                     self._beacon_node_endpoint,
                     CONNECTION_RETRY_INTERVAL,
                 )
                 await trio.sleep(CONNECTION_RETRY_INTERVAL)
-                await self._connect(retry=False)
+                await self._connect(retry_count=retry_count - 1)
             else:
                 self.logger.error(e)
                 raise
